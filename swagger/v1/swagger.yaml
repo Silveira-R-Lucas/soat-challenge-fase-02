@@ -1,0 +1,601 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/cart/":
+    post:
+      summary: create_order
+      tags:
+      - Order
+      parameters: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cart_id:
+                    type: integer
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        unit_price:
+                          type: number
+                        total_price:
+                          type: number
+                  cart_total_price:
+                    type: number
+        '422':
+          description: unprocessable entity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cart_id:
+                  type: integer
+                quantity:
+                  type: integer
+                product_id:
+                  type: integer
+              required:
+              - quantity
+              - product_id
+              - cart_id
+              - client_id
+        description: find cart by id
+    get:
+      summary: show cart
+      tags:
+      - Order
+      parameters: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cart_id:
+                    type: integer
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        unit_price:
+                          type: number
+                        total_price:
+                          type: number
+                  cart_total_price:
+                    type: number
+        '404':
+          description: not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+        required: true
+        description: find cart by id
+  "/api/v1/cart/{cart_id}/add_item":
+    post:
+      summary: add_item_to_cart
+      tags:
+      - Order
+      parameters:
+      - name: cart_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cart_id:
+                    type: integer
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        unit_price:
+                          type: number
+                        total_price:
+                          type: number
+                  cart_total_price:
+                    type: number
+        '422':
+          description: unprocessable entity
+        '404':
+          description: not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                quantity:
+                  type: integer
+              required:
+              - name
+              - quantity
+        description: product parameters
+  "/api/v1/cart/{product_id}":
+    delete:
+      summary: delete product from cart
+      tags:
+      - Order
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        description: find product by id
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cart_id:
+                    type: integer
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        unit_price:
+                          type: number
+                        total_price:
+                          type: number
+                  cart_total_price:
+                    type: number
+        '404':
+          description: not found
+  "/api/v1/cart/{cart_id}/checkout":
+    post:
+      summary: checkout order
+      tags:
+      - Order
+      parameters:
+      - name: cart_id
+        in: path
+        required: true
+        description: checkout order
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    cart_id:
+                      type: integer
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          product_id:
+                            type: integer
+                          quantity:
+                            type: integer
+                          unit_price:
+                            type: number
+                          total_price:
+                            type: number
+                    cart_total_price:
+                      type: number
+        '404':
+          description: not found
+  "/api/v1/cart/list_checked_out_orders":
+    get:
+      summary: list_checked_out_orders
+      tags:
+      - Order
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    cart_id:
+                      type: integer
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          product_id:
+                            type: integer
+                          quantity:
+                            type: integer
+                          unit_price:
+                            type: number
+                          total_price:
+                            type: number
+                    cart_total_price:
+                      type: number
+  "/api/v1/cart/list_in_progress_orders":
+    get:
+      summary: list_in_progress_orders
+      tags:
+      - Order
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    cart_id:
+                      type: integer
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          product_id:
+                            type: integer
+                          quantity:
+                            type: integer
+                          unit_price:
+                            type: number
+                          total_price:
+                            type: number
+                    cart_total_price:
+                      type: number
+  "/api/v1/register":
+    post:
+      summary: register
+      tags:
+      - Clients
+      parameters: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  User_id:
+                    type: string
+                  cpf:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+        '422':
+          description: successful
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cpf:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+              required:
+              - cpf
+              - name
+              - email
+        description: User registry parameters
+  "/api/v1/sign_in":
+    post:
+      summary: sign in
+      tags:
+      - Clients
+      parameters: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        '404':
+          description: not found
+        '422':
+          description: unprocessable entity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cpf:
+                  type: string
+              required:
+              - cpf
+        description: User identification
+  "/api/v1/create_product":
+    post:
+      summary: create_product
+      tags:
+      - Products
+      parameters: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product_id:
+                    type: string
+                  category:
+                    type: string
+                  description:
+                    type: string
+                  price:
+                    type: decimal
+                  quantity:
+                    type: integer
+                  images:
+                    type: file
+        '422':
+          description: unprocessable entity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: decimal
+                quantity:
+                  type: integer
+                images:
+                  type: file
+              required:
+              - name
+              - category
+              - description
+              - price
+              - quantity
+              - images
+        description: Product registry parameters
+  "/api/v1/products_by_category/{category}":
+    get:
+      summary: find_by_category
+      tags:
+      - Products
+      parameters:
+      - name: category
+        in: path
+        required: true
+        description: find productsby category name
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    product_id:
+                      type: string
+                    category:
+                      type: string
+                    description:
+                      type: string
+                    price:
+                      type: decimal
+                    quantity:
+                      type: integer
+                    images:
+                      type: file
+        '404':
+          description: not found
+  "/api/v1/remove_product_from_catalog/{product_id}":
+    delete:
+      summary: delete product from catalog
+      tags:
+      - Products
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        description: find product by id
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                required:
+                - product_id
+        '404':
+          description: not found
+  "/api/v1/update_product/{product_id}":
+    post:
+      summary: update_product
+      tags:
+      - Products
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product_id:
+                    type: string
+                  category:
+                    type: string
+                  description:
+                    type: string
+                  price:
+                    type: decimal
+                  quantity:
+                    type: integer
+                  images:
+                    type: file
+        '422':
+          description: unprocessable entity
+        '404':
+          description: not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: decimal
+                quantity:
+                  type: integer
+                images:
+                  type: file
+        description: Product update parameters
+    patch:
+      summary: update_product
+      tags:
+      - Products
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product_id:
+                    type: string
+                  category:
+                    type: string
+                  description:
+                    type: string
+                  price:
+                    type: decimal
+                  quantity:
+                    type: integer
+                  images:
+                    type: file
+        '422':
+          description: unprocessable entity
+        '404':
+          description: not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: decimal
+                quantity:
+                  type: integer
+                images:
+                  type: file
+              required:
+              - name
+              - category
+              - description
+              - price
+              - quantity
+              - images
+        description: Product update parameters
+servers:
+- url: http://localhost:3000/
+  variables:
+    defaultHost:
+      default: localhost:3000
