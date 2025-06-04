@@ -3,8 +3,7 @@ class Api::V1::CartsController < ActionController::API
   before_action :set_cart
 
   def create_order
-    return render json: {error: @error[:msg]}, status: @error[:status] unless cart_parms_is_valid?
-    response_create = @cart.orders.create(product_id: @product.id, cart_id: @cart.id, quantity: @quantity)
+    response_create = @cart.orders.create(product_id: Product.find(cart_parms[:product_id]), cart_id: @cart.id, quantity: @quantity)
 
     if response_create
       render json: cart_list, status: :accepted
@@ -18,8 +17,7 @@ class Api::V1::CartsController < ActionController::API
   end
 
   def update_order
-    return render json: {error: @error[:msg]}, status: @error[:status] unless cart_parms_is_valid?
-    order = @cart.orders.find_by(product_id: @product.id)
+    order = @cart.orders.find_by(product_id: Product.find(cart_parms[:product_id]))
      
     if order
       order.quantity += @quantity
@@ -32,7 +30,6 @@ class Api::V1::CartsController < ActionController::API
   end
 
   def remove_order
-    return render json: {error: @error[:msg]}, status: @error[:status] unless cart_parms_is_valid?(validate_quantity = false)
     order = @cart.orders.find_by(product_id: cart_params[:product_id])
 
     if order
@@ -44,8 +41,7 @@ class Api::V1::CartsController < ActionController::API
   end
 
   def checkout
-    return render json: {error: @error[:msg]}, status: @error[:status] unless cart_parms_is_valid?(validate_quantity = false)
-    @cart.status = 'Recebido'
+    @cart.status = 'Recebido' unless @cart.orders.blank?
 
     if @cart.save
       render json: {msg: "pedido enviado para cozinha!"}, status: :accepted
@@ -67,14 +63,6 @@ class Api::V1::CartsController < ActionController::API
   end
 
   private
-
-  def cart_parms_is_valid?(validate_quantity = true)
-    @cart = Cart.find_by(id: cart_params[:cart_id])
-    @error = {msg: 'carrinho inexistente', status: :not_found}
-    return false unless @cart
-
-    true
-  end
 
   def set_cart
     @cart ||= Cart.find_by(id: cart_params[:cart_id])
