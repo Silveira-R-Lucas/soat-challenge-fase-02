@@ -65,8 +65,8 @@ class Api::V1::CartsController < ActionController::API
   private
 
   def set_cart
-    @cart ||= Cart.find_by(id: cart_params[:cart_id])
     @cart ||= Cart.find_by(id: session[:cart_id])
+    @cart ||= Cart.find_by(id: cart_params[:cart_id])
     @cart ||= Cart.create(id: session[:cart_id], total_price: 0.0)
     session[:cart_id] = @cart.id
 
