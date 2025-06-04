@@ -15,11 +15,11 @@ https://docs.docker.com/engine/install/
 
 ex:
 
-POSTGRES_USER=example-user
-POSTGRES_PASSWORD=shiiiiiiiitsscret
-POSTGRES_DB=myapp_development
-DATABASE_URL=postgres://postgres:yourpassword@db:5432/myapp_development
-SECRET_KEY_BASE=$(rails secret)
+POSTGRES_USER=example-user \
+POSTGRES_PASSWORD=shiiiiiiiitsscret \
+POSTGRES_DB=myapp_development \
+DATABASE_URL=postgres://postgres:yourpassword@db:5432/myapp_development \
+SECRET_KEY_BASE=$(rails secret) \
 
 
 3- Para gerar uma imagem docker e rodar a aplicação localmente clone este repositório, entre na pasta raíz do projeto e rode:
