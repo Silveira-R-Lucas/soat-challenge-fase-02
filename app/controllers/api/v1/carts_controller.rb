@@ -33,7 +33,7 @@ class Api::V1::CartsController < ActionController::API
 
   def remove_order
     return render json: {error: @error[:msg]}, status: @error[:status] unless cart_parms_is_valid?(validate_quantity = false)
-    order = @cart.orders.find_by(product_id: @product.id)
+    order = @cart.orders.find_by(product_id: cart_params[:product_id])
 
     if order
       order.destroy
@@ -69,9 +69,9 @@ class Api::V1::CartsController < ActionController::API
   private
 
   def cart_parms_is_valid?(validate_quantity = true)
-    @product = Cart.find_by(id: cart_params[:product_id])
+    @cart = Cart.find_by(id: cart_params[:cart_id])
     @error = {msg: 'carrinho inexistente', status: :not_found}
-    return false unless @product
+    return false unless @cart
 
     true
   end
