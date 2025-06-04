@@ -38,7 +38,8 @@ class Api::V1::ProductsController < ActionController::API
   private
 
   def product_parms_is_valid?
-    @product = Product.find_by(name: product_params[:name])
+    @product ||= Product.find_by(id: product_params[:product_id])
+    @product ||= Product.find_by(name: product_params[:name])
     @error = {msg: 'Produto inexistente', status: :not_found}
     return false unless @product
 
