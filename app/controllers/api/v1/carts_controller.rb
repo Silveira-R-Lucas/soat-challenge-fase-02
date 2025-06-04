@@ -2,8 +2,8 @@ class Api::V1::CartsController < ActionController::API
   include ActionController::MimeResponds
   before_action :set_cart
 
-  def create_order
-    response_create = @cart.orders.create(product_id: Product.find(cart_params[:product_id]), cart_id: @cart.id, quantity: @quantity)
+  def create_order 
+    response_create = @cart.orders.create(product_id: Product.find(cart_params[:product_id]).id, cart_id: @cart.id, quantity: cart_params[:quantity])
 
     if response_create
       render json: cart_list, status: :accepted
@@ -17,10 +17,10 @@ class Api::V1::CartsController < ActionController::API
   end
 
   def update_order
-    order = @cart.orders.find_by(product_id: Product.find(cart_params[:product_id]))
+    order = @cart.orders.find_by(product_id: Product.find(cart_params[:product_id]).id)
      
     if order
-      order.quantity += @quantity
+      order.quantity += cart_params[:product_id]
       order.save!
     else
       return render json: {error: "Produto não existe no carrinho"}, status: :not_found	
@@ -78,16 +78,24 @@ class Api::V1::CartsController < ActionController::API
   def cart_list
     {
       id: @cart.id,
-      products: @cart.orders.map do |order| 
-        { id: order.product.id, 
-          name: order.product.name, 
-          quantity: order.quantity, 
-          unit_price: order.product.price, 
-          total_price: (order.product.price * order.quantity).to_f
-        }
-      end,
-      cart_total_price: @cart.total_price.to_f
+      cart_total_price: @cart.total_price.to_f,
+      products: products(@cart)
     }
+  end
+
+  def products(cart)  
+    unless cart.orders.blank?
+       cart.orders.map do |order| 
+        { id: order.product&.id, 
+          name: order.product&.name, 
+          quantity: order.quantity, 
+          unit_price: order.product&.price, 
+          total_price: (order.product&.price * order.quantity).to_f
+        }
+      end
+    else
+      []
+    end
   end
 
   def cart_params
