@@ -3,7 +3,7 @@ class Api::V1::CartsController < ActionController::API
   before_action :set_cart
 
   def create_order
-    response_create = @cart.orders.create(product_id: Product.find(cart_parms[:product_id]), cart_id: @cart.id, quantity: @quantity)
+    response_create = @cart.orders.create(product_id: Product.find(cart_params[:product_id]), cart_id: @cart.id, quantity: @quantity)
 
     if response_create
       render json: cart_list, status: :accepted
@@ -17,7 +17,7 @@ class Api::V1::CartsController < ActionController::API
   end
 
   def update_order
-    order = @cart.orders.find_by(product_id: Product.find(cart_parms[:product_id]))
+    order = @cart.orders.find_by(product_id: Product.find(cart_params[:product_id]))
      
     if order
       order.quantity += @quantity
