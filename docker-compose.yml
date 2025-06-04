@@ -5,7 +5,10 @@ services:
       context: .
       dockerfile: Dockerfile
     # This runs when container started as part of docker-compose up.
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
+    command: >
+      sh -c "rm -f tmp/pids/server.pid &&
+             bundle exec rails s -b '0.0.0.0'&&
+             bundle exec rails db:setup"
     ports:
       - "3000:3000"
     volumes:

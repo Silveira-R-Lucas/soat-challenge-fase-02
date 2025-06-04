@@ -44,9 +44,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_01_201324) do
 
   create_table "carts", force: :cascade do |t|
     t.decimal "total_price", precision: 17, scale: 2
+    t.bigint "client_id"
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_carts_on_client_id"
   end
 
   create_table "clients", force: :cascade do |t|
@@ -73,7 +75,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_01_201324) do
     t.string "name"
     t.string "category"
     t.string "description"
-    t.string "price"
+    t.float "price"
     t.string "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -81,6 +83,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_01_201324) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "carts", "clients"
   add_foreign_key "orders", "carts"
   add_foreign_key "orders", "products"
 end

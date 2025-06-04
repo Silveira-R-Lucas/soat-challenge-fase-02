@@ -17,7 +17,7 @@ RSpec.describe 'api/v1/products', type: :request do
             name: { type: :string },
             category: { type: :string },
             description: { type: :string },
-            price: { type: :decimal },
+            price: { type: :number },
             quantity: { type: :integer },
             images: { type: :file }
           },
@@ -30,7 +30,7 @@ RSpec.describe 'api/v1/products', type: :request do
                 product_id: { type: :string },
                 category: { type: :string },
                 description: { type: :string },
-                price: { type: :decimal },
+                price: { type: :number },
                 quantity: { type: :integer },
                 images: { type: :file }
               }
@@ -62,7 +62,7 @@ RSpec.describe 'api/v1/products', type: :request do
                     product_id: { type: :string },
                     category: { type: :string },
                     description: { type: :string },
-                    price: { type: :decimal },
+                    price: { type: :number },
                     quantity: { type: :integer },
                     images: { type: :file }
                   },
@@ -122,7 +122,7 @@ RSpec.describe 'api/v1/products', type: :request do
             name: { type: :string },
             category: { type: :string },
             description: { type: :string },
-            price: { type: :decimal },
+            price: { type: :number },
             quantity: { type: :integer },
             images: { type: :file }
           }
@@ -134,7 +134,7 @@ RSpec.describe 'api/v1/products', type: :request do
                 product_id: { type: :string },
                 category: { type: :string },
                 description: { type: :string },
-                price: { type: :decimal },
+                price: { type: :number },
                 quantity: { type: :integer },
                 images: { type: :file }
               }
@@ -169,7 +169,7 @@ RSpec.describe 'api/v1/products', type: :request do
             name: { type: :string },
             category: { type: :string },
             description: { type: :string },
-            price: { type: :decimal },
+            price: { type: :number },
             quantity: { type: :integer },
             images: { type: :file }
           },
@@ -182,7 +182,7 @@ RSpec.describe 'api/v1/products', type: :request do
                 product_id: { type: :string },
                 category: { type: :string },
                 description: { type: :string },
-                price: { type: :decimal },
+                price: { type: :number },
                 quantity: { type: :integer },
                 images: { type: :file }
               }

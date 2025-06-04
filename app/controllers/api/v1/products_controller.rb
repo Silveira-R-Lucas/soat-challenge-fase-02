@@ -1,16 +1,17 @@
-class Api::V1::ProductsController < ApplicationController
+class Api::V1::ProductsController < ActionController::API
+  include ActionController::MimeResponds
   def create
     @product = Product.new(product_params)
 
     if @product.save
-      render json: @product, status: :created, location: @product
+      render json: @product, status: :created
     else
       render json: @product.errors, status: :unprocessable_entity
     end
   end
 
   def find_by_category
-    @products_list = Product.where(product_params[:category])
+    @products_list = Product.where(category: product_params[:category])
 
     if @products_list
       render json: @products_list, status: :accepted

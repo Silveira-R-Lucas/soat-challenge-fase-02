@@ -1,4 +1,5 @@
-class Api::V1::CartsController < ApplicationController
+class Api::V1::CartsController < ActionController::API
+  include ActionController::MimeResponds
   before_action :set_cart
 
   def create_order
@@ -56,11 +57,13 @@ class Api::V1::CartsController < ApplicationController
   end
 
   def list_checked_out_orders
-    Cart.list_checked_out_orders
+    response = Cart::list_checked_out_orders
+    render json: response, status: :accepted
   end
 
   def list_in_progress_orders
-    Cart.list_in_progress_orders
+    response = Cart::list_in_progress_orders
+    render json: response, status: :accepted
   end
 
   private
@@ -79,8 +82,8 @@ class Api::V1::CartsController < ApplicationController
     @cart ||= Cart.create(id: session[:cart_id], total_price: 0.0)
     session[:cart_id] = @cart.id
 
-    @cart.client ||= Client.find_by(id: cart_params[:client_id])
-    @cart.client ||= Client.find_by(id: session[:client_id])
+    @cart.client ||= Client.find_by(id: cart_params[:client_id]) if cart_params[:client_id]
+    @cart.client ||= Client.find_by(id: session[:client_id]) if session[:client_id]
     @cart.save!
   end
 

@@ -1,3 +1,4 @@
 class Client < ApplicationRecord
-  before_create validates_presence_of :name, :email, :cpf 
+  has_many :carts
+  validates_presence_of :name, :email, :cpf 
 end

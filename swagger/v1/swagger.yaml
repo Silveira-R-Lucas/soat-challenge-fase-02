@@ -59,7 +59,6 @@ paths:
       summary: show cart
       tags:
       - Order
-      parameters: []
       responses:
         '200':
           description: successful
@@ -87,13 +86,6 @@ paths:
                     type: number
         '404':
           description: not found
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: integer
-        required: true
-        description: find cart by id
   "/api/v1/cart/{cart_id}/add_item":
     post:
       summary: add_item_to_cart

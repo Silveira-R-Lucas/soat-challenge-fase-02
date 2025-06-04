@@ -48,12 +48,6 @@ RSpec.describe 'api/v1/carts', type: :request do
       consumes 'application/json'
       produces 'application/json'
 
-      parameter name: :cart_id,
-        in: :body,
-        type: :integer,
-        required: true,
-        description: 'find cart by id'
-
       response '200', 'successful' do
         schema type: :object,
               properties: {
