@@ -1,10 +1,8 @@
 class Api::V1::MpWebhookController < ActionController::API
-  require 'mercadopago'
   require 'digest'
   include ActionController::MimeResponds
 
   def payment_notification 
-    sdk = Mercadopago::SDK.new( Rails.application.credentials.mercadopago[:token])
     signature = request.env['HTTP_X_SIGNATURE'].split(',').second.split('=').second
     secret = Rails.application.credentials.mercadopago[:secret]
     payload= "id:#{params["data"]["id"]};request-id:#{request.env["HTTP_X_REQUEST_ID"]};ts:#{request.env['HTTP_X_SIGNATURE'].split(',').first.split('=').second};"

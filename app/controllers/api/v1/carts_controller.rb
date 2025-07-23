@@ -1,5 +1,4 @@
 class Api::V1::CartsController < ActionController::API
-  require 'mercadopago'
   include ActionController::MimeResponds
   before_action :set_cart
 
@@ -14,7 +13,7 @@ class Api::V1::CartsController < ActionController::API
     if response_create
       render json: cart_list, status: :accepted
     else
-      render json: { "successful": false, "status": 500 error: 'Algo deu errado !' }, status: :internal_server_error		
+      render json: { "successful": false, "status": 500, error: 'Algo deu errado !' }, status: :internal_server_error		
     end
   end
 
@@ -23,7 +22,7 @@ class Api::V1::CartsController < ActionController::API
   end
 
   def payment_status
-    render json:  { "successful": true, "status": 200,  id: @cart.id, payment_status: @cart.payment_status } status: :ok	
+    render json:  { "successful": true, "status": 200,  id: @cart.id, payment_status: @cart.payment_status }, status: :ok	
   end
 
   def create_payment
@@ -103,7 +102,7 @@ class Api::V1::CartsController < ActionController::API
     @cart.set_cart_total_price
     {
       id: @cart.id,
-      payment_status: @cart.payment_status
+      payment_status: @cart.payment_status,
       cart_total_price: @cart.total_price.to_f,
       products: products(@cart)
     }
