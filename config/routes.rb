@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   post "api/v1/cart/checkout" => "api/v1/carts#checkout"
   get "api/v1/cart/list_checked_out_orders" => "api/v1/carts#list_checked_out_orders"
   get "api/v1/cart/list_in_progress_orders" => "api/v1/carts#list_in_progress_orders"
+  post "api/v1/cart/update_status_in_progress_orders" => "api/v1/cart#update_status_in_progress_orders"
 
   post "api/v1/payment_notification" => "api/v1/mp_webhook#payment_notification"
 

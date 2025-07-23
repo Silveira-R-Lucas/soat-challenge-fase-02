@@ -13,8 +13,8 @@ class Api::V1::MpWebhookController < ActionController::API
       if payment[:successful]
         cart = Cart.find_by(id: payment[:response]["external_reference"])
         if cart
-          @cart.payment_status = payment[:response]["status"]
-          @cart.save!
+          cart.payment_status = payment[:response]["status"]
+          cart.save!
           render json: { "successful": true, "status": 200, error: 'Pagamento atualizado!' }, status: :ok
         else
           render json: { "successful": false, "status": 404, error: 'Falha ao atualizar carrinho, carrinho não encontrado.' }, status: :not_found

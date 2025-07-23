@@ -85,6 +85,23 @@ class Api::V1::CartsController < ActionController::API
     render json: response, status: :accepted
   end
 
+  def update_status_in_progress_orders
+    cart = Cart.find_by(id: cart_params[:cart_id])
+    status = cart_params[:progress_status]
+    if cart
+      if Cart::VALID_STATUS.include?(status)
+        cart.status = status
+        cart.save!
+        render json: { "successful": true, "status": 200, msg: 'Status atualizado!' }, status: :ok
+      else
+        render json: { "successful": false, "status": 400, error: "status inválido: #{status}" }, status: :bad_request
+      end
+    else
+      render json: { "successful": false, "status": 404, error: 'Falha ao atualizar carrinho, carrinho não encontrado.' }, status: :not_found
+    end
+    
+  end
+
   private
 
   def set_cart
@@ -124,6 +141,6 @@ class Api::V1::CartsController < ActionController::API
   end
 
   def cart_params
-    params.permit(:quantity, :product_id, :cart_id, :client_id)
+    params.permit(:quantity, :product_id, :cart_id, :client_id, :progress_status)
   end
 end
