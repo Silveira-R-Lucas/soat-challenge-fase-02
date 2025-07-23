@@ -86,17 +86,12 @@ paths:
                     type: number
         '404':
           description: not found
-  "/api/v1/cart/{cart_id}/update_item":
+  "/api/v1/cart/update_item":
     post:
       summary: update_item_to_cart
       tags:
       - Order
-      parameters:
-      - name: cart_id
-        in: path
-        required: true
-        schema:
-          type: integer
+      parameters: []
       responses:
         '200':
           description: successful
@@ -137,7 +132,7 @@ paths:
                 quantity:
                   type: integer
               required:
-              - name
+              - product_id
               - quantity
         description: product parameters
   "/api/v1/cart/{product_id}":
@@ -179,18 +174,12 @@ paths:
                     type: number
         '404':
           description: not found
-  "/api/v1/cart/{cart_id}/checkout":
+  "/api/v1/cart/checkout":
     post:
       summary: checkout order
       tags:
       - Order
-      parameters:
-      - name: cart_id
-        in: path
-        required: true
-        description: checkout order
-        schema:
-          type: integer
+      parameters: []
       responses:
         '200':
           description: successful

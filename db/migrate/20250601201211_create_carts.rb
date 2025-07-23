@@ -4,6 +4,7 @@ class CreateCarts < ActiveRecord::Migration[7.2]
       t.decimal :total_price, precision: 17, scale: 2
       t.belongs_to :client, foreign_key: true
       t.string :status
+      t.string :payment_status
       t.timestamps
     end
   end

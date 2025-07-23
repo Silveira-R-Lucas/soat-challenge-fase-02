@@ -65,6 +65,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_01_201324) do
     t.bigint "cart_id", null: false
     t.integer "quantity", default: 1
     t.integer "integer", default: 1
+    t.string "descricao"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cart_id"], name: "index_orders_on_cart_id"

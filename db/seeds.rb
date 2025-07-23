@@ -74,6 +74,7 @@ products_ids = Product.all.pluck(:id)
   cart = Cart.create(
   total_price: 0,
   status: 'Pronto',
+  payment_status: 'approved',
   client_id: client_ids.pop
   )
 
@@ -86,6 +87,7 @@ end
   cart = Cart.create(
   total_price: 0,
   status: 'Finalizado',
+  payment_status: 'approved',
   client_id: client_ids.pop
   )
 
@@ -99,6 +101,7 @@ end
   cart = Cart.create(
   total_price: 0,
   status: 'Em_preparação',
+  payment_status: 'approved',
   client_id: client_ids.pop
   )
 
@@ -111,6 +114,7 @@ end
   cart = Cart.create(
   total_price: 0,
   status: 'Recebido',
+  payment_status: 'approved',
   client_id: client_ids.pop
   )
 

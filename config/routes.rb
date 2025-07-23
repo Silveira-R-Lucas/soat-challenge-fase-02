@@ -17,11 +17,15 @@ Rails.application.routes.draw do
 
   post "api/v1/cart/" => "api/v1/carts#create_order"
   get "api/v1/cart/" => "api/v1/carts#show"
-  post "api/v1/cart/:cart_id/update", to: "api/v1/carts#update_order"
+  get "api/v1/cart/payment_status" => "api/v1/carts#payment_status"
+  post "api/v1/cart/create_payment" => "api/v1/carts#create_payment"
+  post "api/v1/cart/update", to: "api/v1/carts#update_order"
   delete "api/v1/cart/:product_id" => "api/v1/carts#remove_order"
-  post "api/v1/cart/:cart_id/checkout" => "api/v1/carts#checkout"
+  post "api/v1/cart/checkout" => "api/v1/carts#checkout"
   get "api/v1/cart/list_checked_out_orders" => "api/v1/carts#list_checked_out_orders"
   get "api/v1/cart/list_in_progress_orders" => "api/v1/carts#list_in_progress_orders"
+
+  post "api/v1/payment_notification" => "api/v1/mp_webhook#payment_notification"
 
   # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
