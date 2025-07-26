@@ -53,8 +53,8 @@ Desenvolver um monolito para gerenciamento de pedidos de uma lanchonete, impleme
 
 | Recurso | Link |
 |---------|------|
-| **Swagger** | [ Swagger UI ](https://d513fee6e427.ngrok-free.app/api-docs/index.html) |
-| **Collection da api - Insomnia** | [ Payloads e Curl ](https://www.postman.com/spacecraft-engineer-11432051/teste-para-api-soat-challenge/overview) |
+| **Swagger** | [ Swagger UI ](https://419997780cbd.ngrok-free.app/api-docs/index.html) |
+| **Collection da api - Postman** | [ Payloads e Curl ](https://www.postman.com/spacecraft-engineer-11432051/teste-para-api-soat-challenge/overview) |
 | **Event Storming** | [ Excalidraw ](https://excalidraw.com/#json=FDpHxcEwFGhYKyjSa2xrb,O-NrlyA3rKxDSe7wGkHL-g) |
 | **Variáveis de Ambiente** |  [Doc] (variaveis de ambiente.txt) |
 | **Vídeo de demonstração da API** |  [ Google Drive  ]() |
