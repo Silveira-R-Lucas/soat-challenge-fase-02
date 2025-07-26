@@ -17,15 +17,16 @@ module SoatChallengeFase01
     config.autoload_lib(ignore: %w[assets tasks])
     config.autoload_paths += %W(
       #{config.root}/app/domain
+      #{config.root}/app/domain/ports
       #{config.root}/app/domain/product
       #{config.root}/app/domain/client
       #{config.root}/app/domain/cart
       #{config.root}/app/domain/payment
-      #{config.root}/app/domain/services
-      #{config.root}/app/domain/services/product
-      #{config.root}/app/domain/services/client
-      #{config.root}/app/domain/services/cart
-      #{config.root}/app/domain/services/payment
+      #{config.root}/app/domain/use_cases
+      #{config.root}/app/domain/use_cases/product
+      #{config.root}/app/domain/use_cases/client
+      #{config.root}/app/domain/use_cases/cart
+      #{config.root}/app/domain/use_cases/payment
       #{config.root}/app/infrastructure
       #{config.root}/app/infrastructure/persistence
       #{config.root}/app/infrastructure/external_apis

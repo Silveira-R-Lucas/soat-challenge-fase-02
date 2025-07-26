@@ -39,7 +39,7 @@ class Api::V1::ProductsController < ActionController::API
       else
         render json: { "successful": false, "status": 404, error: 'Produto não encontrado' }, status: :not_found
       end
-    rescue StandardError => e # Capturar exceções genéricas
+    rescue StandardError => e
       render json: { "successful": false, "status": 422, errors: e.message }, status: :internal_server_error
     end
   end

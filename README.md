@@ -1,134 +1,232 @@
-Olá ! Este é o repositório da solução em rails para o soat-challenge-fase-01
+# 🍔 Sistema de autoatendimento de fast food
 
-link do repositório:
-https://github.com/Silveira-R-Lucas/soat-challenge-fase-01
+> **SOAT Tech Challenge - Fase 01 | Grupo 80**
 
-abrir o arquivo do event storming com a plataforma excalidraw:
+---
 
-excalidraw.com
+## 📋 Sumário
 
-1- Para executar esta solução você deve ter o docker instalado:
+- [Objetivo](#-objetivo)
+- [Funcionalidades](#-funcionalidades)
+- [Documentação](#-documentação)
+- [Tecnologias](#️-tecnologias)
+- [Arquitetura](#️-arquitetura)
+- [Linguagem Ubíqua](#-linguagem-ubíqua)
+- [Configuração](#️-configuração)
+- [Execução](#️-execução)
+- [Testes](#-testes)
+- [Equipe](#-equipe---grupo-38)
 
-https://docs.docker.com/engine/install/
+---
 
-2- Adicionar um arquivo .env na pasta raíz do projeto com as variáveis de ambientes de acesso ao postgres
+## 🎯 Objetivo
 
-ex:
+Desenvolver um monolito para gerenciamento de pedidos de uma lanchonete, implementando as melhores práticas de desenvolvimento de software com arquitetura hexagonal e práticas de Domain Driven Design (DDD).
 
-POSTGRES_USER=example-user \
-POSTGRES_PASSWORD=shiiiiiiiitsscret \
-POSTGRES_DB=myapp_development \
-DATABASE_URL=postgres://postgres:yourpassword@db:5432/myapp_development \
-SECRET_KEY_BASE=$(rails secret) \
+---
+
+## 🚀 Funcionalidades
+
+### Identificação de Clientes
+- ✅ Cadastro do Cliente
+- ✅ Identificação do Cliente via CPF
+
+### Gestão de Produtos
+- ✅ CRUD completo de produtos
+- ✅ Busca por categoria ( Bebidas, Lanches, Acompanhamentos e Sobremesa )
+
+### Gestão de Pedidos
+- ✅ CRUD completo de pedidos
+- ✅ Pedidos salvos em cachê para que as informações de um carrinho de uma sessão não se percam
+- ✅ Checkout de pedidos
+- ✅ Listagem de pedidos em produção
+- ✅ Listagem de pedidos finalizados e em produção
+- ✅ Atualização de status de pedido em andamento
+
+### Sistema de Pagamento
+- ✅ Integração com API de pagamento via QrCode com PIX do Mercado Pago
+- ✅ Webhook para recebimento de notificação de pagamento e atualização do pedido
+
+---
+
+## 📚 Documentação
+
+| Recurso | Link |
+|---------|------|
+| **Swagger** | [ Swagger UI ](https://d513fee6e427.ngrok-free.app/api-docs/index.html) |
+| **Collection da api - Insomnia** | [ Payloads e Curl ](https://www.postman.com/spacecraft-engineer-11432051/teste-para-api-soat-challenge/overview) |
+| **Event Storming** | [ Excalidraw ](https://excalidraw.com/#json=FDpHxcEwFGhYKyjSa2xrb,O-NrlyA3rKxDSe7wGkHL-g) |
+| **Variáveis de Ambiente** |  [Doc] (variaveis de ambiente.txt) |
+| **Vídeo de demonstração da API** |  [ Google Drive  ]() |
+---
+
+## 🛠️ Tecnologias
+
+| Categoria | Tecnologia | Versão |
+|-----------|------------|--------|
+| **Linguagem** | Ruby | 3.2.2 |
+| **Framework Web / UI** | Rails | 7.2.2 |
+| **ORM** | Active Record | 7.2.2 |
+| **Banco de Dados** | PostgreSQL | 17.5  |
+| **Containerização** | Docker & Docker Compose | 28.3.2 |
+
+---
+
+## 🏗️ Arquitetura do Projeto Rails
+
+A arquitetura hexagonal deste projeto Rails garante que a lógica de negócio principal em (app/domain/) seja o seu "coração" isolado, sem depender dos detalhes de como ele interage com o mundo. Essa camada central define portas (ports), que são interfaces abstratas para as operações que o negócio precisa (como salvar um cliente ou processar um pagamento). As camadas externas de infraestrutura (app/infrastructure/) e controladores (app/controllers/) atuam como adaptadores, implementando essas portas para conectar o domínio puro a tecnologias específicas, como o banco de dados (via Active Record) ou APIs externas (Mercado Pago), e também para traduzir interações do usuário (requisições HTTP), mantendo o código modular, testável e flexível a futuras mudanças tecnológicas.
+
+-----
+
+## Estrutura de Pastas
+
+```
+app/
+├── controllers/                  # Adaptadores Primários (Interfaces de Usuário/APIs)
+│   ├── carts_controller.rb
+│   ├── clients_controller.rb
+│   ├── mp_webhooks_controller.rb
+│   └── products_controller.rb
+│
+├── domain/                       # Camada de Aplicação / Domínio 
+│   ├── cart/                     
+│   │   ├── cart.rb               # Objeto de Domínio Puro: Um Carrinho
+│   │   └── cart_item.rb          # Objeto de Domínio Puro: Um Item do Carrinho
+│   │
+│   ├── client/                   
+│   │   └── client.rb             # Objeto de Domínio Puro: Um Cliente
+│   │
+│   ├── payment/                  
+│   │   └── payment_notification.rb # Objeto de Domínio Puro: Notificação de Pagamento
+│   │
+│   ├── product/                  
+│   │   └── product.rb            # Objeto de Domínio Puro: Um Produto
+│   │
+│   ├── ports/                    # Ports (Interfaces)
+│   │   ├── cart_repository.rb    # Port: Interface para Persistência de Carrinho
+│   │   ├── client_repository.rb  # Port: Interface para Persistência de Cliente
+│   │   └── product_repository.rb # Port: Interface para Persistência de Produto
+│   │
+│   └── use_cases/                # Use Cases / Service Objects (Operações de Negócio)
+│       ├── add_product_to_cart.rb
+│       ├── checkout_cart.rb
+│       ├── create_client.rb
+│       ├── create_product.rb
+│       ├── delete_product.rb
+│       ├── find_products_by_category.rb
+│       ├── find_product_by_id.rb
+│       ├── generate_cart_payment.rb
+│       ├── get_or_create_client_cart.rb
+│       ├── identify_client_session.rb
+│       ├── list_checked_out_carts.rb
+│       ├── list_in_progress_carts.rb
+│       ├── process_mercadopago_notification.rb
+│       ├── remove_product_from_cart.rb
+│       ├── update_cart_status.rb
+│       └── update_product_quantity_in_cart.rb
+│
+├── infrastructure/               # Camada de Infraestrutura/Adaptadore
+│   ├── external_apis/            # Adaptadores para APIs Externas
+│   │   └── mercadopago/          # Adaptadores Específicos do Mercado Pago
+│   │       ├── mercadopago_payment_gateway_adapter.rb # Adaptador: Interage com a API de Pagamento do MP
+│   │       └── mercadopago_webhook_adapter.rb         # Adaptador: Lida com Webhook do MP
+│   │
+│   └── persistence/              # Adaptadores de Persistência (Bancos de Dados, ORMs)
+│       └── active_record/        # Adaptadores para Active Record (ORM Específico)
+│           ├── cart/             # Modelos Active Record e Repositórios para Carrinho
+│           │   ├── active_record_cart_repository.rb # Adaptador: Implementa CartRepository usando AR
+│           │   ├── cart_item_model.rb               # Modelo Active Record: Mapeia para a tabela cart_item_models
+│           │   └── cart_model.rb                    # Modelo Active Record: Mapeia para a tabela cart_models
+│           │
+│           ├── client/           # Modelos Active Record e Repositórios para Cliente
+│           │   ├── active_record_client_repository.rb # Adaptador: Implementa ClientRepository usando AR
+│           │   └── client_model.rb                    # Modelo Active Record: Mapeia para a tabela client_models
+│           │
+│           └── product/          # Modelos Active Record e Repositórios para Produto
+│               ├── active_record_product_repository.rb # Adaptador: Implementa ProductRepository usando AR
+│               └── product_model.rb                    # Modelo Active Record: Mapeia para a tabela product_models
+│
+└── # ... outras pastas padrão do Rails (assets, channels, jobs, mailers, etc.)
+```
+
+```
+
+### Princípios Arquiteturais
+- **Arquitetura Hexagonal** (Ports & Adapters)
+- **Domain Driven Design** (DDD)
+
+---
+
+### 📖 Linguagem Ubíqua
+### Entidades Principais
+| Termo | Definição |
+|-------|-----------|
+| **Cart** | Conjunto de itens escolhidos pelo cliente unificado em um pedido, com status rastreável |
+| **CartItem** | itens escolhidos pelo cliente |
+| **Client** | Cliente que realiza pedidos (identificação opcional) |
+| **Product** |  Produto individual disponível no cardápio |
+
+### Status e Categorias
+
+#### Status do pedido
+- `novo` - Pedido que ainda não realizou checkout (pedido não pago e não enviado para a cozinha)
+- `recebido` - Pedido pago e recebido pela cozinha
+- `em_preparação` - Cozinha preparando o pedido
+- `pronto` - Pedido pronto para retirada do cliente
+- `finalizado` - Pedido entregue ao cliente
+
+#### Categorias
+- `Lanches` - Sanduíches, hamburgueres etc...
+- `Bebidas` - Bebidas, refrigerantes, sucos etc..
+- `Acompanhamentos` - Acompanhamentos como batata frita, nuggets e afins
+- `Sobremesas` - Sobremesas
+
+#### Status do pagamento
+- `aprovado` - Pagamento aprovado
+- `pendente` - pedido em aguardo, pagamento ainda não iniciado
+- `aguardando pagamento` - Aguardando processamento / pagamento
+- `recusado` - Pagamento recusado
+
+---
 
 
-3- Para gerar uma imagem docker e rodar a aplicação localmente clone este repositório, entre na pasta raíz do projeto e rode:
+## Pré-requisitos
 
-docker-compose build
+- **Docker** e **Docker Compose** instalados ([Guia de instalação](https://docs.docker.com/get-started/get-docker/))
+- **Git** para clonar o repositório
+
+## ⚙️ Configuração
+### Clonar Repositório do projeto
+```bash
+# 1. Clonar o repositório
+git clone https://github.com/Silveira-R-Lucas/soat-challenge-fase-01.git
+cd soat-challenge-fase-01
+
+# 1. Subir todos os serviços
 docker-compose up
+```
+---
 
-4 - para verificar se a aplicação está up podemos acessar pelo navegador:
+## Acesso à Aplicação
+Fica disponível a url da aplicação para demonstração do projeto
+- **URL:** https://d513fee6e427.ngrok-free.app
 
-localhost:3000
+---
 
-drive do video com a demonstração:
+## 👥 Equipe - Grupo 80
 
-https://drive.google.com/file/d/1Axo7l0d5KVhthvMgz6c4PLCLxF7u_qrc/view?usp=drive_link
+| Nome | RM |
+|------|-----|
+| **Lucas Rodrigues Silveira** | rm361245 |
 
-Testando as API'S
+---
 
-para acessar a documentação das api's, acesse a url:
+## 📝 Licença
 
-http://0.0.0.0:3000/api-docs
+Este projeto foi desenvolvido como parte do desafio técnico do curso de pós graduação em arquitetura de software da FIAP.
 
-Para o meu teste dos endpoints vou utilizar o curl, configurei a aplicação para que identifique os carrinhos e usuários pela sessão que estão utilizando e para validar essa funcionalidade pelo curl vamos utilizar:
+---
 
- "curl -c cookies.txt " pra salvar os cookies
-  
- "curl -b cookies.txt" pra utilizar os cookies salvos
-
-Buscando o carrinho :
-
-curl -X 'GET' \
-  'http://localhost:3000/api/v1/cart/' \
-  -H 'accept: application/json' |  python3 -m json.tool
-  
-Confirmado um id de carrinho diferente:
-
-  curl -c cookies.txt -X 'GET' \
-  'http://localhost:3000/api/v1/cart/' \
-  -H 'accept: application/json' |  python3 -m json.tool
-  
-listar pedidos que já realizaram checkout
-
-  curl -X 'GET' \
-  'http://localhost:3000/api/v1/cart/list_checked_out_orders' \
-  -H 'accept: application/json' |  python3 -m json.tool
-
-listar pedidos que realizaram checkout e não estão finalizados
-
-  curl -X 'GET' \
-  'http://localhost:3000/api/v1/cart/list_in_progress_orders' \
-  -H 'accept: application/json' |  python3 -m json.tool
-  
-Registrando nosso cadastro:
-
-curl -b cookies.txt -X 'POST' \
-  'http://localhost:3000/api/v1/register' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "cpf": "44536916006",
-  "name": "Lucas Silveira",
-  "email": "lucas.teste@gmail.com"
-}' |  python3 -m json.tool
-
-identificando nossa sessão:
-
-curl -b cookies.txt -X 'POST' \
-  'http://localhost:3000/api/v1/sign_in' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "cpf": "44536916006"
-}' |  python3 -m json.tool
-
-listar produtos por categoria:
-
-curl -b cookies.txt X 'GET' \
-  'http://localhost:3000/api/v1/products_by_category/Lanches' \
-  -H 'accept: application/json' |  python3 -m json.tool
-  
-editar preço do produto:
-
-curl -b cookies.txt -X 'POST' \
-  'http://localhost:3000/api/v1/update_product/23' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "price": 2.00
-}' |  python3 -m json.tool
-
-adicionar produto no carrinho:
-
-curl -b cookies.txt -X 'POST' \
-  'http://localhost:3000/api/v1/cart/' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "quantity": 3,
-  "product_id": 12
-}'  |  python3 -m json.tool
-
-
-deletar um produto do carrinho:
-
-curl -X 'DELETE' \
-  'http://localhost:3000/api/v1/cart/12' \
-  -H 'accept: application/json' |  python3 -m json.tool
-
-Fazer checkout:
-
-curl -b cookies.txt  -X 'POST' \
-  'http://localhost:3000/api/v1/cart/12/checkout' \
-  -H 'accept: application/json' |  python3 -m json.tool
+<div align="center">
+  <strong>🍔 Desenvolvido com dedicação pelo Grupo 80 🍔 </strong>
+</div>
