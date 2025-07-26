@@ -1,24 +1,35 @@
 class Api::V1::CartsController < ActionController::API
+  require_dependency Rails.root.join('app/infrastructure/external_apis/mercadopago/mercadopago_payment_gateway_adapter')
   include ActionController::MimeResponds
   before_action :set_cart
 
-  def create_order
-    require 'pry';binding.pry
-    if cart_params[:product_id].blank?
-      render json: { "successful": false, "status": 400, error: 'Parâmetros faltantes: product_id' }, status: :bad_request
-    end
+  def add_item
+    add_product_to_cart_service = AddProductToCart.new(
+      cart_repository: ActiveRecordCartRepository.new,
+      product_repository: ActiveRecordProductRepository.new 
+    )
 
-    response_create = @cart.orders.create(product_id: Product.find(cart_params[:product_id]).id, cart_id: @cart.id, quantity: cart_params[:quantity])
+    client_id ||= cart_params[:client_id]
+    client_id ||= @cart.client_id
+    begin
+      updated_cart = add_product_to_cart_service.call(
+        client_id: client_id,
+        product_id: cart_params[:product_id],
+        quantity: cart_params[:quantity],
+        cart: @cart
+      )
 
-    if response_create
-      render json: cart_list, status: :accepted
-    else
-      render json: { "successful": false, "status": 500, error: 'Algo deu errado !' }, status: :internal_server_error		
+      render json: { "successful": true, "status": 200, message: 'Product adicionado ao carrinho com sucesso!', cart: @cart.to_h_for_display }, status: :ok
+    rescue ArgumentError => e
+      render json: { "successful": false, "status": 422, errors: e.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      Rails.logger.error "Erro ao adicionar produto ao carrinho: #{e.message}"
+      render json: { "successful": false, "status": 500, errors: 'Um erro inesperado aconteceu.' }, status: :internal_server_error
     end
   end
 
   def show
-    render json: cart_list, status: :ok	
+    render json: { "successful": true, "status": 200, response: @cart.to_h_for_display}, status: :ok
   end
 
   def payment_status
@@ -26,117 +37,187 @@ class Api::V1::CartsController < ActionController::API
   end
 
   def create_payment
-    response = Connectors::Mercadopago.new.generate_qr_payment(@cart)
+    generate_cart_payment_service = GenerateCartPayment.new(
+      cart_repository: ActiveRecordCartRepository.new,
+      payment_gateway_adapter: ::MercadoPago::PaymentGatewayAdapter.new 
+    )
 
-    if response[:successful] == true
-      @cart.payment_status = "Aguardando_pagamento"
-      @cart.save!
-      render json: response, status: :ok
-    else
-      render json: response, status: response[:status]
+    begin
+      result = generate_cart_payment_service.call(cart: @cart)
+
+      render json: { successful: true, status: 200,  cart: @cart.to_h_for_display, payment_details: result[:payment_details] }, status: :ok
+    rescue ArgumentError => e
+      case e.message
+      when /Cart not found/
+        render json: { successful: false, status: 404, error: e.message }, status: :not_found
+      when /Cart is empty/
+        render json: { successful: false, status: 422, error: e.message }, status: :unprocessable_entity
+      when /Payment already generated/
+        render json: { successful: false, status: 409, error: e.message }, status: :conflict 
+      when /Payment gateway failed/
+        render json: { successful: false, status: 502, error: e.message }, status: :bad_gateway
+      else
+        render json: { successful: false, status: 422, error: e.message }, status: :unprocessable_entity
+      end
+    rescue StandardError => e
+      Rails.logger.error "Erro inesperado ao gerar pagamento: #{e.message}"
+      render json: { successful: false, status: 500, error: 'Algo deu errado!' }, status: :internal_server_error
     end
   end
 
-  def update_order
-    order = @cart.orders.find_by(product_id: Product.find(cart_params[:product_id]).id)
-     
-    if order
-      order.quantity = cart_params[:quantity]
-      order.save!
-    else
-      return render json: { "successful": false, "status": 404, error: "Produto não existe no carrinho"}, status: :not_found	
-    end
+  def remove_item
+    return render json: { "successful": false, "status": 400, errors: 'Parâmetros faltantes: product_id' }, status: :bad_request if cart_params[:product_id].blank?
 
-    render json: cart_list, status: :accepted
+    remove_product_from_cart_service = RemoveProductFromCart.new(
+      cart_repository: ActiveRecordCartRepository.new
+    )
+
+    begin
+      updated_cart = remove_product_from_cart_service.call(
+        client_id: @cart.client_id,
+        product_id: cart_params[:product_id],
+        quantity: cart_params[:quantity],
+        cart: @cart
+      )
+
+    render json: { "successful": true, "status": 200, msg: "Produto removido do carrinho com sucesso!"}, status: :accepted
+    rescue ArgumentError => e 
+      render json: { "successful": false, "status": 422, errors: e.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      Rails.logger.error "Erro ao remover produto do carrinho: #{e.message}"
+      render json: { "successful": false, "status": 500, errors: 'Um erro inesperado aconteceu' }, status: :internal_server_error
+    end
   end
 
-  def remove_order
-    order = @cart.orders.find_by(product_id: cart_params[:product_id])
+    def update_item
+    if cart_params[:product_id].blank? || cart_params[:quantity].blank?
+      render json:  { "successful": false, "status": 400, errors: 'Parâmetros faltantes: product_id, quantity' }, status: :bad_request
+      return
+    end
 
-    if order
-      order.destroy
-      render json: cart_list, status: :accepted
-    else
-      return render json: { "successful": false, "status": 404, error: "Produto não existe no carrinho"}, status: :not_found	
+    update_product_quantity_in_cart_service = UpdateProductQuantityInCart.new(
+      cart_repository: ActiveRecordCartRepository.new
+    )
+
+    begin
+      updated_cart = update_product_quantity_in_cart_service.call(
+        client_id: @cart.client_id,
+        product_id: cart_params[:product_id],
+        new_quantity: cart_params[:quantity].to_i,
+        cart: @cart
+      )
+
+      render json: { "successful": true, "status": 200, msg: "Quantidade atualizada!"}, status: :accepted
+    rescue ArgumentError => e
+      render json: { errors: e.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      Rails.logger.error "Error ao atualizar quantidadde de item no carrinho: #{e.message}"
+      render json: { errors: 'Um erro inesperado ocorreu!' }, status: :internal_server_error
     end
   end
 
   def checkout
-    if @cart.payment_status == "approved" || @cart.payment_status == "authorized" 
-      @cart.status = 'Recebido' unless @cart.orders.blank?
+    checkout_cart_service = CheckoutCart.new(
+      cart_repository: ActiveRecordCartRepository.new
+    )
 
-      if @cart.save
-        render json: { "successful": true, "status": 200, msg: "Pedido nº #{@cart.id}  enviado para cozinha!"}, status: :accepted
+    begin
+      processed_cart = checkout_cart_service.call(cart: @cart)
+
+      render json: { "successful": true, "status": 200, msg: "Pedido nº #{@cart.id}  enviado para cozinha!"}, status: :accepted
+    rescue ArgumentError => e
+      case e.message
+      when /Payment pending/
+        render json: { successful: false, status: 402, error: e.message }, status: :payment_required
+      when /Cart not found/
+        render json: { successful: false, status: 404, error: e.message }, status: :not_found
+      when /empty cart/
+        render json: { successful: false, status: 422, error: e.message }, status: :unprocessable_entity
       else
-        render json: { "successful": false, "status": 500,  error: 'Algo deu errado !' }, status: :internal_server_error		
+        render json: { successful: false, status: 422, error: e.message }, status: :unprocessable_entity
       end
-    else
-      render json: { "successful": false, "status": 402,  error: 'Pagamento pendente, não é possível realizar checkout.' }, status: :payment_required
+    rescue StandardError => e
+      Rails.logger.error "Erro durante checkout: #{e.message}"
+      render json: { successful: false, status: 500, error: 'Algo deu errado!' }, status: :internal_server_error
     end
   end
 
   def list_checked_out_orders
-    response = Cart::list_checked_out_orders
-    render json: response, status: :accepted
+    list_checked_out_carts_use_case = ListCheckedOutCarts.new(
+      cart_repository: ActiveRecordCartRepository.new
+    )
+
+    begin
+      carts = list_checked_out_carts_use_case.call
+
+      render json: { "successful": true, "status": 200, response: carts.map(&:kitchen_display)}, status: :ok 
+    rescue StandardError => e
+      Rails.logger.error "Error listing checked out carts: #{e.message}"
+      render json: { errors: 'Algo deu errado ao listar pedidos finalizados!' }, status: :internal_server_error
+    end
   end
 
   def list_in_progress_orders
-    response = Cart::list_in_progress_orders
-    render json: response, status: :accepted
+    list_in_progress_carts_use_case = ListInProgressCarts.new(
+      cart_repository: ActiveRecordCartRepository.new
+    )
+
+    begin
+      carts = list_in_progress_carts_use_case.call
+      render json: { "successful": true, "status": 200, response: carts.map(&:kitchen_display)}, status: :ok
+    rescue StandardError => e
+      Rails.logger.error "Error listing in progress carts: #{e.message}"
+      render json: { errors: 'Algo deu errado ao listar pedidos em andamento!' }, status: :internal_server_error
+    end
   end
 
-  def update_status_in_progress_orders
-    cart = Cart.find_by(id: cart_params[:cart_id])
-    status = cart_params[:progress_status]
-    if cart
-      if Cart::VALID_STATUS.include?(status)
-        cart.status = status
-        cart.save!
-        render json: { "successful": true, "status": 200, msg: 'Status atualizado!' }, status: :ok
+  def update_status_in_progress_orders    
+    return render json: { successful: false, status: 400, errors: 'Parâmetros faltantes: progress_status' }, status: :bad_request if cart_params[:progress_status].blank?
+
+    update_cart_status_service = UpdateCartStatus.new(
+      cart_repository: ActiveRecordCartRepository.new
+    )
+
+    begin
+      updated_cart = update_cart_status_service.call(
+        cart: @cart,
+        new_status: cart_params[:progress_status]
+      )
+
+      render json: { successful: true, status: 200, msg: 'Status atualizado!', cart: updated_cart.to_h_for_display }, status: :ok
+    rescue ArgumentError => e 
+      case e.message
+      when /Cart with ID .* not found/
+        render json: { successful: false, status: 404, error: e.message }, status: :not_found
+      when /Status inválido/
+        render json: { successful: false, status: 400, error: e.message }, status: :bad_request
       else
-        render json: { "successful": false, "status": 400, error: "status inválido: #{status}" }, status: :bad_request
+        render json: { successful: false, status: 422, error: e.message }, status: :unprocessable_entity
       end
-    else
-      render json: { "successful": false, "status": 404, error: 'Falha ao atualizar carrinho, carrinho não encontrado.' }, status: :not_found
+    rescue StandardError => e
+      Rails.logger.error "Erro inesperado ao atualizar status do carrinho: #{e.message}"
+      render json: { successful: false, status: 500, error: 'Algo deu errado!' }, status: :internal_server_error
     end
-    
-  end
+  end  
 
   private
 
   def set_cart
-    @cart ||= Cart.find_by(id: session[:cart_id])
-    @cart ||= Cart.find_by(id: cart_params[:cart_id])
-    @cart ||= Cart.create(id: session[:cart_id], total_price: 0.0)
-    session[:cart_id] = @cart.id
+    current_client_id = session[:client_id] || cart_params[:client_id]
+    current_cart_id = session[:cart_id] || cart_params[:cart_id]
+    get_or_create_cart_service = GetOrCreateClientCart.new(
+      cart_repository: ActiveRecordCartRepository.new
+    )
 
-    @cart.client ||= Client.find_by(id: cart_params[:client_id]) if cart_params[:client_id]
-    @cart.client ||= Client.find_by(id: session[:client_id]) if session[:client_id]
-    @cart.save!
-  end
-
-  def cart_list
-    @cart.set_cart_total_price
-    {
-      id: @cart.id,
-      payment_status: @cart.payment_status,
-      cart_total_price: @cart.total_price.to_f,
-      products: products(@cart)
-    }
-  end
-
-  def products(cart)  
-    unless cart.orders.blank?
-       cart.orders.map do |order| 
-        { id: order.product&.id, 
-          name: order.product&.name, 
-          quantity: order.quantity, 
-          unit_price: order.product&.price, 
-          total_price: (order.product&.price * order.quantity).to_f
-        }
-      end
-    else
-      []
+    begin
+      @cart = get_or_create_cart_service.call(client_id: current_client_id, cart_id: current_cart_id)
+      session[:cart_id] ||= @cart.id 
+      session[:client_id] ||= @cart.client_id if session[:client_id].blank?
+    rescue ArgumentError => e
+      render json: { "successful": false, "status": 422, errors: e.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      Rails.logger.error "Erro ao configurar o carrinho: #{e.message}"
+      render json: { "successful": false, "status": 500, errors: 'Um erro inesperado aconteceu ao configurar o carrinho' }, status: :internal_server_error
     end
   end
 

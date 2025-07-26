@@ -42,37 +42,38 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_01_201324) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "carts", force: :cascade do |t|
-    t.decimal "total_price", precision: 17, scale: 2
-    t.bigint "client_id"
-    t.string "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["client_id"], name: "index_carts_on_client_id"
-  end
-
-  create_table "clients", force: :cascade do |t|
-    t.string "name"
-    t.string "email"
-    t.string "cpf"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["cpf"], name: "index_clients_on_cpf", unique: true
-  end
-
-  create_table "orders", force: :cascade do |t|
-    t.bigint "product_id", null: false
-    t.bigint "cart_id", null: false
+  create_table "cart_item_models", force: :cascade do |t|
+    t.bigint "cart_model_id", null: false
+    t.bigint "product_model_id", null: false
     t.integer "quantity", default: 1
     t.integer "integer", default: 1
     t.string "descricao"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["cart_id"], name: "index_orders_on_cart_id"
-    t.index ["product_id"], name: "index_orders_on_product_id"
+    t.index ["cart_model_id"], name: "index_cart_item_models_on_cart_model_id"
+    t.index ["product_model_id"], name: "index_cart_item_models_on_product_model_id"
   end
 
-  create_table "products", force: :cascade do |t|
+  create_table "cart_models", force: :cascade do |t|
+    t.decimal "total_price", precision: 17, scale: 2
+    t.bigint "client_model_id"
+    t.string "status", default: "novo", null: false
+    t.string "payment_status", default: "pendente", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_model_id"], name: "index_cart_models_on_client_model_id"
+  end
+
+  create_table "client_models", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "cpf"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cpf"], name: "index_client_models_on_cpf", unique: true
+  end
+
+  create_table "product_models", force: :cascade do |t|
     t.string "name"
     t.string "category"
     t.string "description"
@@ -84,7 +85,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_01_201324) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "carts", "clients"
-  add_foreign_key "orders", "carts"
-  add_foreign_key "orders", "products"
+  add_foreign_key "cart_item_models", "cart_models"
+  add_foreign_key "cart_item_models", "product_models"
+  add_foreign_key "cart_models", "client_models"
 end

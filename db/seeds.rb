@@ -10,7 +10,7 @@
 require 'faker'
 
 5.times do
-  Product.create(
+  ProductModel.create(
     name: Faker::Dessert.variety,
     category: 'Sobremesa',
     description: Faker::Dessert.flavor,
@@ -19,7 +19,7 @@ require 'faker'
 end
 
 7.times do
-  Product.create(
+  ProductModel.create(
     name: Faker::Food.dish,
     category: 'Acompanhamentos',
     description: Faker::Food.description,
@@ -28,7 +28,7 @@ end
 end
 
 12.times do
-  Product.create(
+  ProductModel.create(
     name: Faker::Food.dish,
     category: 'Lanches',
     description: Faker::Food.description,
@@ -36,7 +36,7 @@ end
     price: Faker::Commerce.price.to_f)
 end
 
-Product.create([
+ProductModel.create([
   {
     name: 'Refrigerante',
     category: 'Bebidas',
@@ -60,65 +60,71 @@ Product.create([
   }
 ])
 
+ClientModel.create(
+    id: 99999,
+    name: 'Anônimo',
+    email: Faker::Internet.email,
+    cpf: Faker::Number.leading_zero_number(digits: 11).to_s
+  )
+
 25.times do
-  Client.create(
+  ClientModel.create(
     name: Faker::Name.name,
     email: Faker::Internet.email,
     cpf: Faker::Number.leading_zero_number(digits: 11).to_s
   )
 end
 
-client_ids = Client.all.pluck(:id)
-products_ids = Product.all.pluck(:id)
+client_ids = ClientModel.all.pluck(:id)
+products_ids = ProductModel.all.pluck(:id)
 3.times do
-  cart = Cart.create(
+  cart = CartModel.create(
   total_price: 0,
-  status: 'Pronto',
-  payment_status: 'approved',
-  client_id: client_ids.pop
+  status: 'pronto',
+  payment_status: 'aprovado',
+  client_model_id: client_ids.pop
   )
-
   Faker::Number.between(from: 1, to: 3).times do
-    Order.create(product_id: products_ids.pop, quantity: Faker::Number.between(from: 1, to: 5), cart_id: cart.id)
+    CartItemModel.create(product_model_id: products_ids.pop, quantity: Faker::Number.between(from: 1, to: 5), cart_model_id: cart.id)
   end
 end
 
 3.times do
-  cart = Cart.create(
+  cart = CartModel.create(
   total_price: 0,
-  status: 'Finalizado',
-  payment_status: 'approved',
-  client_id: client_ids.pop
+  status: 'finalizado',
+  payment_status: 'aprovado',
+  client_model_id: client_ids.pop
   )
 
   Faker::Number.between(from: 1, to: 3).times do
-    Order.create(product_id: products_ids.pop, quantity: Faker::Number.between(from: 1, to: 5), cart_id: cart.id)
+    CartItemModel.create(product_model_id: products_ids.pop, quantity: Faker::Number.between(from: 1, to: 5), cart_model_id: cart.id)
   end
 end
 
 
 3.times do
-  cart = Cart.create(
+  cart = CartModel.create(
   total_price: 0,
-  status: 'Em_preparação',
-  payment_status: 'approved',
-  client_id: client_ids.pop
+  status: 'em_preparação',
+  payment_status: 'aprovado',
+  client_model_id: client_ids.pop
   )
 
   Faker::Number.between(from: 1, to: 3).times do
-    Order.create(product_id: products_ids.pop, quantity: Faker::Number.between(from: 1, to: 5), cart_id: cart.id)
+    CartItemModel.create(product_model_id: products_ids.pop, quantity: Faker::Number.between(from: 1, to: 5), cart_model_id: cart.id)
   end
 end
 
 3.times do
-  cart = Cart.create(
+  cart = CartModel.create(
   total_price: 0,
   status: 'Recebido',
-  payment_status: 'approved',
-  client_id: client_ids.pop
+  payment_status: 'aprovado',
+  client_model_id: client_ids.pop
   )
 
   Faker::Number.between(from: 1, to: 3).times do
-    Order.create(product_id: products_ids.pop, quantity: Faker::Number.between(from: 1, to: 5), cart_id: cart.id)
+    CartItemModel.create(product_model_id: products_ids.pop, quantity: Faker::Number.between(from: 1, to: 5), cart_model_id: cart.id)
   end
 end

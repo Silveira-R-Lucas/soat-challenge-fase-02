@@ -11,20 +11,21 @@ Rails.application.routes.draw do
   post "api/v1/sign_in" => "api/v1/clients#identify_session"
 
   post "api/v1/create_product" => "api/v1/products#create"
+  get "api/v1/product/:product_id" => "api/v1/products#show"
   get "api/v1/products_by_category/:category" => "api/v1/products#find_by_category"
   delete "api/v1/remove_product_from_catalog/:product_id" => "api/v1/products#remove_product_from_catalog"
   match "api/v1/update_product/:product_id" => "api/v1/products#update", via: [:patch, :post]
 
-  post "api/v1/cart/" => "api/v1/carts#create_order"
+  post "api/v1/cart/add_item" => "api/v1/carts#add_item"
   get "api/v1/cart/" => "api/v1/carts#show"
   get "api/v1/cart/payment_status" => "api/v1/carts#payment_status"
   post "api/v1/cart/create_payment" => "api/v1/carts#create_payment"
-  post "api/v1/cart/update", to: "api/v1/carts#update_order"
-  delete "api/v1/cart/:product_id" => "api/v1/carts#remove_order"
+  patch "api/v1/cart/update_item", to: "api/v1/carts#update_item"
+  delete "api/v1/cart/remove_item" => "api/v1/carts#remove_item"
   post "api/v1/cart/checkout" => "api/v1/carts#checkout"
   get "api/v1/cart/list_checked_out_orders" => "api/v1/carts#list_checked_out_orders"
   get "api/v1/cart/list_in_progress_orders" => "api/v1/carts#list_in_progress_orders"
-  post "api/v1/cart/update_status_in_progress_orders" => "api/v1/cart#update_status_in_progress_orders"
+  post "api/v1/cart/update_status_in_progress_orders" => "api/v1/carts#update_status_in_progress_orders"
 
   post "api/v1/payment_notification" => "api/v1/mp_webhook#payment_notification"
 

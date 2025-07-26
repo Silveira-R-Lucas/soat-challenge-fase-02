@@ -15,7 +15,25 @@ module SoatChallengeFase01
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
-
+    config.autoload_paths += %W(
+      #{config.root}/app/domain
+      #{config.root}/app/domain/product
+      #{config.root}/app/domain/client
+      #{config.root}/app/domain/cart
+      #{config.root}/app/domain/payment
+      #{config.root}/app/domain/services
+      #{config.root}/app/domain/services/product
+      #{config.root}/app/domain/services/client
+      #{config.root}/app/domain/services/cart
+      #{config.root}/app/domain/services/payment
+      #{config.root}/app/infrastructure
+      #{config.root}/app/infrastructure/persistence
+      #{config.root}/app/infrastructure/external_apis
+      #{config.root}/app/infrastructure/persistence/active_record
+      #{config.root}/app/infrastructure/persistence/active_record/products
+      #{config.root}/app/infrastructure/persistence/active_record/clients
+      #{config.root}/app/infrastructure/persistence/active_record/carts
+    )
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
