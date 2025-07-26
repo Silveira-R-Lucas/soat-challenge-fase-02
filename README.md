@@ -13,8 +13,6 @@
 - [Arquitetura](#️-arquitetura)
 - [Linguagem Ubíqua](#-linguagem-ubíqua)
 - [Configuração](#️-configuração)
-- [Execução](#️-execução)
-- [Testes](#-testes)
 - [Equipe](#-equipe---grupo-38)
 
 ---
@@ -56,7 +54,7 @@ Desenvolver um monolito para gerenciamento de pedidos de uma lanchonete, impleme
 | **Swagger** | [ Swagger UI ](https://419997780cbd.ngrok-free.app/api-docs/index.html) |
 | **Collection da api - Postman** | [ Payloads e Curl ](https://www.postman.com/spacecraft-engineer-11432051/teste-para-api-soat-challenge/overview) |
 | **Event Storming** | [ Excalidraw ](https://excalidraw.com/#json=FDpHxcEwFGhYKyjSa2xrb,O-NrlyA3rKxDSe7wGkHL-g) |
-| **Variáveis de Ambiente** |  [Doc] (variaveis de ambiente.txt) |
+| **Variáveis de Ambiente** |  [Doc] (https://github.com/Silveira-R-Lucas/soat-challenge-fase-01/blob/main/variaveis%20de%20ambiente.txt) |
 | **Vídeo de demonstração da API** |  [ Google Drive  ]() |
 ---
 
@@ -147,8 +145,6 @@ app/
 │               └── product_model.rb                    # Modelo Active Record: Mapeia para a tabela product_models
 │
 └── # ... outras pastas padrão do Rails (assets, channels, jobs, mailers, etc.)
-```
-
 ```
 
 ### Princípios Arquiteturais
