@@ -13,15 +13,13 @@
 - [Arquitetura](#️-arquitetura)
 - [Linguagem Ubíqua](#-linguagem-ubíqua)
 - [Configuração](#️-configuração)
-- [Execução](#️-execução)
-- [Testes](#-testes)
 - [Equipe](#-equipe---grupo-38)
 
 ---
 
 ## 🎯 Objetivo
 
-Desenvolver um monolito para gerenciamento de pedidos de uma lanchonete, implementando as melhores práticas de desenvolvimento de software com arquitetura hexagonal e práticas de Domain Driven Design (DDD).
+Desenvolver um monolito backend para gerenciamento de pedidos de uma lanchonete, implementando as melhores práticas de desenvolvimento de software com arquitetura hexagonal e práticas de Domain Driven Design (DDD).
 
 ---
 
@@ -53,11 +51,11 @@ Desenvolver um monolito para gerenciamento de pedidos de uma lanchonete, impleme
 
 | Recurso | Link |
 |---------|------|
-| **Swagger** | [ Swagger UI ](https://d513fee6e427.ngrok-free.app/api-docs/index.html) |
-| **Collection da api - Insomnia** | [ Payloads e Curl ](https://www.postman.com/spacecraft-engineer-11432051/teste-para-api-soat-challenge/overview) |
+| **Swagger** | [ Swagger UI ](https://419997780cbd.ngrok-free.app/api-docs/index.html) |
+| **Collection da api - Postman** | [ Payloads e Curl ](https://www.postman.com/spacecraft-engineer-11432051/teste-para-api-soat-challenge/overview) |
 | **Event Storming** | [ Excalidraw ](https://excalidraw.com/#json=FDpHxcEwFGhYKyjSa2xrb,O-NrlyA3rKxDSe7wGkHL-g) |
-| **Variáveis de Ambiente** |  [Doc] (variaveis de ambiente.txt) |
-| **Vídeo de demonstração da API** |  [ Google Drive  ]() |
+| **Variáveis de Ambiente** |  ![ Doc ](variaveis%20de%20ambiente.txt) |
+| **Vídeo de demonstração da API** |  [ Google Drive  ](https://drive.google.com/file/d/1k7tnzqGyFv6tTJiQoxxv_KPjB3UnbYb4/view?usp=sharing) |
 ---
 
 ## 🛠️ Tecnologias
@@ -147,8 +145,6 @@ app/
 │               └── product_model.rb                    # Modelo Active Record: Mapeia para a tabela product_models
 │
 └── # ... outras pastas padrão do Rails (assets, channels, jobs, mailers, etc.)
-```
-
 ```
 
 ### Princípios Arquiteturais
