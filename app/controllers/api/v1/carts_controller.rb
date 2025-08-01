@@ -173,6 +173,7 @@ class Api::V1::CartsController < ActionController::API
 
   def update_status_in_progress_orders    
     return render json: { successful: false, status: 400, errors: 'Parâmetros faltantes: progress_status' }, status: :bad_request if cart_params[:progress_status].blank?
+    return render json: { successful: false, status: 400, errors: 'Parâmetros faltantes: cart_id' }, status: :bad_request if cart_params[:cart_id].blank?
 
     update_cart_status_service = UpdateCartStatus.new(
       cart_repository: ActiveRecordCartRepository.new
@@ -180,7 +181,7 @@ class Api::V1::CartsController < ActionController::API
 
     begin
       updated_cart = update_cart_status_service.call(
-        cart: @cart,
+        cart_id: cart_params[:cart_id],
         new_status: cart_params[:progress_status]
       )
 

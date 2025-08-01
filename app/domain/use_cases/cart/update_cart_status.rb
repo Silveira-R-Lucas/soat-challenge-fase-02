@@ -3,7 +3,10 @@ class UpdateCartStatus
     @cart_repository = cart_repository
   end
 
-  def call(cart:, new_status:)
+  def call(cart_id:, new_status:)
+    cart = @cart_repository.find(cart_id)
+    raise ArgumentError, "Cart with ID #{cart_id} not found." unless cart
+
     cart.update_status!(new_status)
     @cart_repository.save(cart)
 

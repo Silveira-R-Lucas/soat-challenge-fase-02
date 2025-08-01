@@ -2,6 +2,10 @@ module MercadoPago
   class WebhookAdapter
     require 'digest'
     require 'curb'
+
+    MAX_RETRIES = 6
+    RETRY_DELAY_SECONDS = 10
+
     def initialize()
       @secret = Rails.application.credentials.mercadopago[:secret]
       @token = Rails.application.credentials.mercadopago[:token]
@@ -35,27 +39,44 @@ module MercadoPago
     end
 
     def get_payment_details(payment_id)
-      http = Curl.get("https://api.mercadopago.com/v1/payments/#{payment_id}" ) {|http|
-        http.headers["Authorization"] = "Bearer #{@token}"
-        http.headers['Content-Type']='application/json'
-      }
+      attempts = 0
 
-      body = JSON.parse(http.body).deep_symbolize_keys
-      if http.code == 200
-        {successful: true, status: http.code, details: body}
-      else
-        Rails.logger.error "Mercado Pago API (get_payment_details) error: #{http.code} - #{body[:message]}"
-        { successful: false, error: body[:message], status_code: http.code }
+      begin
+        attempts += 1
+        Rails.logger.info "Attempt #{attempts} to get Mercado Pago payment details for ID: #{payment_id}"
+
+        http = Curl.get("https://api.mercadopago.com/v1/payments/#{payment_id}") do |http_client|
+          http_client.headers["Authorization"] = "Bearer #{@token}"
+          http_client.headers['Content-Type']='application/json'
+        end
+
+        body = JSON.parse(http.body).deep_symbolize_keys
+
+        if http.code == 200
+          return { successful: true, status: http.code, details: body }
+        elsif http.code == 404 && attempts < MAX_RETRIES 
+          Rails.logger.warn "Mercado Pago API returned 404 for payment ID #{payment_id}. Retrying in #{RETRY_DELAY_SECONDS} seconds..."
+          sleep RETRY_DELAY_SECONDS 
+          raise "Retry required"
+        else
+          Rails.logger.error "Mercado Pago API (get_payment_details) error: #{http.code} - #{body[:message]} for ID #{payment_id}"
+          return { successful: false, status: http.code, error_message: body[:message] }
+        end
+
+      rescue JSON::ParserError => e
+        Rails.logger.error "Invalid JSON response from Mercado Pago API for ID #{payment_id}: #{e.message}"
+        return { successful: false, error_message: "Invalid API response JSON." }
+      rescue Curl::Err::CurlError => e
+        Rails.logger.error "Curl error connecting to Mercado Pago API for ID #{payment_id}: #{e.message}"
+        return { successful: false, error_message: "Network error connecting to payment gateway." }
+      rescue StandardError => e 
+        if e.message == "Retry required" && attempts < MAX_RETRIES
+          retry
+        else
+          Rails.logger.error "Unexpected error getting Mercado Pago payment details for ID #{payment_id}: #{e.message}"
+          return { successful: false, error_message: "Unexpected error from payment gateway." }
+        end
       end
-    rescue JSON::ParserError => e
-      Rails.logger.error "Invalid JSON response from Mercado Pago API: #{e.message}"
-      { successful: false, error: "Invalid API response JSON." }
-    rescue Curl::Err::CurlError => e
-      Rails.logger.error "Curl error connecting to Mercado Pago API: #{e.message}"
-      { successful: false, error: "Network error connecting to payment gateway." }
-    rescue StandardError => e
-      Rails.logger.error "Unexpected error getting Mercado Pago payment details: #{e.message}"
-      { successful: false, error: "Unexpected error from payment gateway." }
     end
 
     private
