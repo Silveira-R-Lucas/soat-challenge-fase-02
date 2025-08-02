@@ -1,0 +1,13 @@
+# rails-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rails-app-service
+spec:
+  selector:
+    app: rails-app
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000 
+  type: LoadBalancer

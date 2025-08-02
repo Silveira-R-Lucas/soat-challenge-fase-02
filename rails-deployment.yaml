@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rails-app-deployment
+  labels:
+    app: rails-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rails-app
+  template:
+    metadata:
+      labels:
+        app: rails-app
+    spec:
+      containers:
+        - name: rails
+          image: container-registry.br-se1.magalu.cloud/soat-challenge-2/soat_tech_challenge:1.2.0
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          ports:
+            - containerPort: 3000
+          env:
+            - name: RAILS_ENV
+              value: "development"
+            - name: RAILS_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rails-secrets
+                  key: master_key
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: database_name
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@db:5432/$(POSTGRES_DB)"
+            - name: MERCADOPAGO_NOTIFICATION_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: rails-config
+                  key: mercadopago_notification_url
+          command: ["/rails/bin/docker-entrypoint"]
+          args: ["bundle", "exec", "rails", "s", "-b", "0.0.0.0", "-p", "3000"]
+      imagePullSecrets:
+        - name: magalu-registry-secret

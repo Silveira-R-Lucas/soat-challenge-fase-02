@@ -1,0 +1,63 @@
+#Criar imagem a partir do seu projeto
+docker build -t silveira.codes/soat_tech_challenge:1.2.0 .
+
+
+#criar os arquivos de deploymente referenciando a imagem gerada 
+spec:
+      containers:
+        - name: rails
+          # --- Atualize a tag da imagem aqui ---
+          image: silveira.codes/soat_tech_challenge:1.0.1
+          # ------------------------------------
+          ports:
+          
+          
+
+minikube start # Isso geralmente configura o contexto 'minikube' automaticamente
+
+          
+# Carregue a imagem no cluster Minikube:
+
+minikube image load silveira.codes/soat_tech_challenge:1.2.0
+
+#gerar as secrets para o projeto
+kubectl create secret generic db-credentials \
+  --from-literal=database_name=soat_challenge_fase_01_development \
+  --from-literal=username=postgres \
+  --from-literal=password=swordfish5432 \
+  --from-literal=database_url=postgresql://postgres:swordfish5432@db:5432/soat_challenge_fase_01_development
+    
+cat config/master.key  
+kubectl create secret generic rails-secrets   --from-literal=master_key=0153f65fd46afa114b8a61056b8c7e5a
+
+#pegar credenciais ngrok em https://dashboard.ngrok.com/get-started/your-authtoken
+kubectl create secret generic ngrok-authtoken-secret --from-literal=authtoken='309alfEseqy1x98a84KM8f7GMBB_6H9tEpkYAKUJqj6ufxuE5'
+
+kubectl apply -f db-deployment.yaml
+kubectl apply -f db-pvc.yaml
+kubectl apply -f db-service.yaml
+
+kubectl apply -f ngrok-deployment.yaml
+kubectl apply -f ngrok-service.yaml
+
+# verificar url gerada pelo ngrok
+http://localhost:4040
+
+kubectl create configmap rails-config --from-literal=mercadopago_notification_url='https://5096d9d6c025.ngrok-free.app//'
+
+kubectl apply -f rails-deployment.yaml
+
+
+###  HPA
+
+minikube addons enable metrics-server
+
+kubectl get pods -n kube-system | grep metrics-server
+
+Criar arquivo rails-hpa.yaml
+
+kubectl apply -f rails-hpa.yaml
+
+kubectl get hpa
+
+
