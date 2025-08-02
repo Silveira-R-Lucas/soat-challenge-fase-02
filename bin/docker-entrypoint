@@ -5,13 +5,6 @@ if [ -z "${LD_PRELOAD+x}" ] && [ -f /usr/lib/*/libjemalloc.so.2 ]; then
   export LD_PRELOAD="$(echo /usr/lib/*/libjemalloc.so.2)"
 fi
 
-if [ -z "$POSTGRES_USER" ] || [ -z "$POSTGRES_PASSWORD" ] || [ -z "$POSTGRES_DB" ]; then
-  echo "ERROR: Missing database credentials in environment variables."
-  exit 1
-fi
-
-export DATABASE_URL="postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres-db-service:5432/$POSTGRES_DB"
-
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
 fi
