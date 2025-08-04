@@ -67,7 +67,8 @@ Desenvolver um monolito backend para gerenciamento de pedidos de uma lanchonete,
 | **ORM** | Active Record | 7.2.2 |
 | **Banco de Dados** | PostgreSQL | 17.5  |
 | **Containerização** | Docker & Docker Compose | 28.3.2 |
-
+| **Conteiner Registry** | Magalucloud |  |
+| **Kubernets** | Magalucloud | 1.30.11 |
 ---
 
 ## 🏗️ Arquitetura do Projeto Rails
