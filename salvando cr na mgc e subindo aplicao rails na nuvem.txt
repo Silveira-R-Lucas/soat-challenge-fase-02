@@ -1,6 +1,9 @@
+# 1. Clonar o repositório
+git clone https://github.com/Silveira-R-Lucas/soat-challenge-fase-02.git
+cd soat-challenge-fase-02
+
 #Criar imagem a partir do seu projeto
 docker build -t silveira.codes/soat_tech_challenge:1.2.0 .
-
 
 # fazer download da CLI da mgc
 https://docs.magalu.cloud/docs/devops-tools/cli-mgc/how-to/download-and-install

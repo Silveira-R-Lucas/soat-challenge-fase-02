@@ -1,8 +1,11 @@
+# 1. Clonar o repositório
+git clone https://github.com/Silveira-R-Lucas/soat-challenge-fase-02.git
+cd soat-challenge-fase-02
+
 #Criar imagem a partir do seu projeto
 docker build -t silveira.codes/soat_tech_challenge:1.2.0 .
 
-
-#criar os arquivos de deploymente referenciando a imagem gerada 
+#criar os arquivos de deployment referenciando a imagem gerada 
 spec:
       containers:
         - name: rails
