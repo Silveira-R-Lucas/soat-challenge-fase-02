@@ -3,10 +3,10 @@ module MercadoPago
     require 'curb'
 
     def initialize()
-      @token = Rails.application.credentials.mercadopago[:token]
-      @user_id = Rails.application.credentials.mercadopago[:user_id]
-      @external_pos_id = Rails.application.credentials.mercadopago[:external_pos_id]
-      @notification_url = "https://419997780cbd.ngrok-free.app/api/v1/payment_notification"
+      @token = MERCADOPAGO_TOKEN
+      @user_id = MERCADOPAGO_USER_ID
+      @external_pos_id = MERCADOPAGO_EXTERNAL_POS_ID
+      @notification_url = "#{MERCADOPAGO_NOTIFICATION_URL}/api/v1/payment_notification"
     end
 
     def generate_qr_payment(cart_domain_object)

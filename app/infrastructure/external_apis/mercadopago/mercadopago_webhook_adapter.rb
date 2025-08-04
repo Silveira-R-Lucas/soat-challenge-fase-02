@@ -7,8 +7,8 @@ module MercadoPago
     RETRY_DELAY_SECONDS = 10
 
     def initialize()
-      @secret = Rails.application.credentials.mercadopago[:secret]
-      @token = Rails.application.credentials.mercadopago[:token]
+      @secret = MERCADOPAGO_SECRET
+      @token = MERCADOPAGO_TOKEN
     end
 
     def parse_notification(params, headers)

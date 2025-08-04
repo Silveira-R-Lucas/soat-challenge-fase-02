@@ -46,7 +46,12 @@ kubectl apply -f ngrok-service.yaml
 # verificar url gerada pelo ngrok
 http://localhost:4040
 
-kubectl create configmap rails-config --from-literal=mercadopago_notification_url='https://5096d9d6c025.ngrok-free.app//'
+kubectl create configmap mp-rails-config --from-literal=mercadopago_notification_url='<url_da_aplicação>'\
+  --from-literal=user_id=<user_id_integração_mp> \
+  --from-literal=external_pos_id=<id_do_caixa_de_integração_MP>
+
+kubectl create configmap mp-secret --from-literal=secret='<secret_webhook_mp>'\
+  --from-literal=token=<token_de_produção_da _sua integração_MP> 
 
 kubectl apply -f rails-deployment.yaml
 
