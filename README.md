@@ -197,8 +197,8 @@ app/
 ## ⚙️ Configuração
 | Método | Tutorial |
 |---------|------|
-| **MINIKUBE - Executando o projeto localmente** | [Doc](https://github.com/Silveira-R-Lucas/soat-challenge-fase-01/blob/main/Subindo%20sua%20aplica%C3%A7%C3%A3o%20rails%20no%20kubernets%20localmente%20com%20minikube.txt) |
-| **MGC - Executando o projeto na magalucloud** | [Doc](https://github.com/Silveira-R-Lucas/soat-challenge-fase-01/blob/main/salvando%20cr%20na%20mgc%20e%20subindo%20aplicao%20rails%20na%20nuvem.txt) |
+| **MINIKUBE - Executando o projeto localmente** | [Doc](https://github.com/Silveira-R-Lucas/soat-challenge-fase-02/blob/main/Subindo%20sua%20aplica%C3%A7%C3%A3o%20rails%20no%20kubernets%20localmente%20com%20minikube.md) |
+| **MGC - Executando o projeto na magalucloud** | [Doc](https://github.com/Silveira-R-Lucas/soat-challenge-fase-02/blob/main/Salvando%20cr%20na%20mgc%20e%20subindo%20aplica%C3%A7%C3%A3o%20rails%20na%20nuvem.md) |
 ---
 
 ## Acesso à Aplicação
