@@ -51,11 +51,6 @@ spec:
                   key: database_name
             - name: DATABASE_URL
               value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@db:5432/$(POSTGRES_DB)"
-            - name: MERCADOPAGO_NOTIFICATION_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: mp-rails-config
-                  key: mercadopago_notification_url
             - name: MERCADOPAGO_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -66,11 +61,16 @@ spec:
                 secretKeyRef:
                   name: mp-secret
                   key: secret
+            - name: MERCADOPAGO_NOTIFICATION_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: mp-rails-config
+                  key: mercadopago_notification_url
             - name: MERCADOPAGO_USER_ID
               valueFrom:
                 configMapKeyRef:
-                  name: user_id
-                  key: mercadopago_notification_url
+                  name: mp-rails-config
+                  key: user_id
             - name: MERCADOPAGO_EXTERNAL_POS_ID
               valueFrom:
                 configMapKeyRef:

@@ -3,10 +3,10 @@ module MercadoPago
     require 'curb'
 
     def initialize()
-      @token = MERCADOPAGO_TOKEN
-      @user_id = MERCADOPAGO_USER_ID
-      @external_pos_id = MERCADOPAGO_EXTERNAL_POS_ID
-      @notification_url = "#{MERCADOPAGO_NOTIFICATION_URL}/api/v1/payment_notification"
+      @token = ENV.fetch('MERCADOPAGO_TOKEN')
+      @user_id = ENV.fetch('MERCADOPAGO_USER_ID')
+      @external_pos_id = ENV.fetch('MERCADOPAGO_EXTERNAL_POS_ID')
+      @notification_url = "#{ENV.fetch('MERCADOPAGO_NOTIFICATION_URL')}/api/v1/payment_notification"
     end
 
     def generate_qr_payment(cart_domain_object)

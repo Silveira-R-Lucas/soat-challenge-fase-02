@@ -7,8 +7,8 @@ module MercadoPago
     RETRY_DELAY_SECONDS = 10
 
     def initialize()
-      @secret = MERCADOPAGO_SECRET
-      @token = MERCADOPAGO_TOKEN
+      @secret = ENV.fetch('MERCADOPAGO_SECRET')
+      @token = ENV.fetch('MERCADOPAGO_TOKEN')
     end
 
     def parse_notification(params, headers)

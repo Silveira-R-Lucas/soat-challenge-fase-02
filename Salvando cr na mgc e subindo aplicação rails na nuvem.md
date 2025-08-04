@@ -103,7 +103,10 @@ kubectl create secret generic rails-secrets   --from-literal=master_key='<result
 #pegar credenciais ngrok em https://dashboard.ngrok.com/get-started/your-authtoken
 kubectl create secret generic ngrok-authtoken-secret --from-literal=authtoken='<ngrok_token>'
 
-# Desta forma a configuração se torna permanente e está sempre disponível.
+kubectl create secret mp-secret --from-literal=secret='<secret_webhook_mp>'\
+  --from-literal=token='<token_de_produção_da _sua integração_MP> '
+
+# Desta forma a configuração se torna permanente e está sempre estará disponível para a aplicação.
 ````
 
 # 15. Realizar o deploy do banco de dados
