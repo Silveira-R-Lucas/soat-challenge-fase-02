@@ -192,7 +192,8 @@ app/
 - **Docker** e **Docker Compose** instalados ([Guia de instalação](https://docs.docker.com/get-started/get-docker/))
 - **Git** para clonar o repositório
 - **Minkube para rodar localmente ou Conta em alguma cloud provider**
-
+- **Kubectl** para gerenciamento do cluster
+  
 ## ⚙️ Configuração
 | Método | Tutorial |
 |---------|------|
